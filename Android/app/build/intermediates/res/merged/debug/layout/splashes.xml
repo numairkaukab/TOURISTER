@@ -1,0 +1,27 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Splash"
+    android:background="#fefefe">
+
+
+    <FrameLayout
+        android:id="@+id/imgs"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:layout_width="453dp"
+            android:layout_height="606dp"
+            android:id="@+id/imageView"
+            android:src="@drawable/splash_dr2"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="2dp" />
+    </FrameLayout>
+
+</RelativeLayout>
