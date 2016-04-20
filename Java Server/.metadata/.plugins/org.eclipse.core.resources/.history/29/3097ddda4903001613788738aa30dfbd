@@ -1,0 +1,15 @@
+package Main;
+
+public class Dispatcher {
+	
+	public static final String JAVABRIDGE_PORT="8087";
+	  static final php.java.bridge.JavaBridgeRunner runner = 
+	    php.java.bridge.JavaBridgeRunner.getInstance(JAVABRIDGE_PORT);
+	
+
+	public static void main(String[] args) {
+		
+
+	}
+
+}

@@ -1,0 +1,33 @@
+package Recommendation;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
+import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
+import org.apache.mahout.cf.taste.impl.neighborhood.ThresholdUserNeighborhood;
+import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
+import org.apache.mahout.cf.taste.model.DataModel;
+import org.apache.mahout.cf.taste.neighborhood.UserNeighborhood;
+import org.apache.mahout.cf.taste.similarity.UserSimilarity;
+
+public class CollaborativeFiltering {
+	
+	
+	
+	public static void main(String[] args) throws IOException, TasteException {
+		
+		
+		File preferenceValues = new File("C:\\Bitnami\\wampstack-5.6.19-0\\frameworks\\laravel\\storage\\exports\\test_export.csv");
+		DataModel recommendationModel = new FileDataModel(preferenceValues);
+		
+		UserSimilarity pearson = new PearsonCorrelationSimilarity(recommendationModel);
+		UserNeighborhood nh = new ThresholdUserNeighborhood(0.1, pearson, recommendationModel);
+		
+		long[] myArray = nh.getUserNeighborhood(1);
+		
+		System.out.println(myArray[0]);
+	}
+
+}

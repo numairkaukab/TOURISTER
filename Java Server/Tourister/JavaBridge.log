@@ -1,0 +1,36 @@
+Apr 20 22:05:37 JavaBridge ERROR: An exception occured: java.lang.NullPointerException
+java.lang.NullPointerException
+	at java.io.FilterInputStream.close(Unknown Source)
+	at sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.close(Unknown Source)
+	at php.java.bridge.JavaBridgeRunner.handleDoGet(JavaBridgeRunner.java:451)
+	at php.java.bridge.JavaBridgeRunner.doGet(JavaBridgeRunner.java:371)
+	at php.java.bridge.http.HttpServer.service(HttpServer.java:290)
+	at php.java.bridge.http.HttpServer$Runner.run(HttpServer.java:205)
+	at php.java.bridge.ThreadPool$Delegate.run(ThreadPool.java:60)
+Apr 20 22:05:50 JavaBridge ERROR: An exception occured: java.lang.NullPointerException
+java.lang.NullPointerException
+	at java.io.FilterInputStream.close(Unknown Source)
+	at sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.close(Unknown Source)
+	at php.java.bridge.JavaBridgeRunner.handleDoGet(JavaBridgeRunner.java:451)
+	at php.java.bridge.JavaBridgeRunner.doGet(JavaBridgeRunner.java:371)
+	at php.java.bridge.http.HttpServer.service(HttpServer.java:290)
+	at php.java.bridge.http.HttpServer$Runner.run(HttpServer.java:205)
+	at php.java.bridge.ThreadPool$Delegate.run(ThreadPool.java:60)
+Apr 20 22:05:58 JavaBridge ERROR: An exception occured: java.lang.NullPointerException
+java.lang.NullPointerException
+	at java.io.FilterInputStream.close(Unknown Source)
+	at sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.close(Unknown Source)
+	at php.java.bridge.JavaBridgeRunner.handleDoGet(JavaBridgeRunner.java:451)
+	at php.java.bridge.JavaBridgeRunner.doGet(JavaBridgeRunner.java:371)
+	at php.java.bridge.http.HttpServer.service(HttpServer.java:290)
+	at php.java.bridge.http.HttpServer$Runner.run(HttpServer.java:205)
+	at php.java.bridge.ThreadPool$Delegate.run(ThreadPool.java:60)
+Apr 20 22:05:59 JavaBridge ERROR: An exception occured: java.lang.NullPointerException
+java.lang.NullPointerException
+	at java.io.FilterInputStream.close(Unknown Source)
+	at sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.close(Unknown Source)
+	at php.java.bridge.JavaBridgeRunner.handleDoGet(JavaBridgeRunner.java:451)
+	at php.java.bridge.JavaBridgeRunner.doGet(JavaBridgeRunner.java:371)
+	at php.java.bridge.http.HttpServer.service(HttpServer.java:290)
+	at php.java.bridge.http.HttpServer$Runner.run(HttpServer.java:205)
+	at php.java.bridge.ThreadPool$Delegate.run(ThreadPool.java:60)
