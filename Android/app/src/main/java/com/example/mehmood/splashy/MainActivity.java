@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -51,6 +52,23 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -59,6 +77,9 @@ public class MainActivity extends AppCompatActivity
     private CharSequence ch;
     private boolean check = false;
     private Button sub;
+    ArrayList<HashMap<String, String>> arrayList = new ArrayList<HashMap<String,String>>();
+    HashMap<String, String> hm ;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -75,7 +96,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        AsyncTaskRunner runner = new AsyncTaskRunner();
+        runner.execute();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +189,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_gallery) {
 
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+    /*        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
             try {
                 startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
@@ -176,7 +198,7 @@ public class MainActivity extends AppCompatActivity
             } catch (GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
             }
-
+*/
             if (!myMapFragment.isAdded())
                 aMap.beginTransaction().add(R.id.map, myMapFragment).commit();
 
@@ -223,15 +245,29 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+
+        for(int i=0;i<arrayList.size();i++){
+            googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(Double.parseDouble(arrayList.get(i).get("lat")), Double.parseDouble(arrayList.get(i).get("lng"))))
+                    .title(arrayList.get(i).get("name"))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
+
+            Log.v("christmas"+"="+i,arrayList.get(i).get("lat"));
+        }
+
+
+
+
     if(check) {
             //Intent tag = new Intent(MainActivity.this, TagPOI.class);
             //startActivity(tag);
-             my_pop();
+            my_pop();
+
 
                 googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(lt.latitude, lt.longitude))
-                .title(("hello"))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
+                        .position(new LatLng(lt.latitude, lt.longitude))
+                        .title((String) ch)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
 
 
 // Move the camera instantly to Sydney with a zoom of 15.
@@ -246,7 +282,7 @@ public class MainActivity extends AppCompatActivity
             //final String s=getIntent().getStringExtra("type");
             //final int s2= Integer.parseInt(getIntent().getStringExtra("rate"));
 
-
+/*
             googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -268,7 +304,7 @@ public class MainActivity extends AppCompatActivity
                     return view;
                 }
             });
-
+*/
 
         }
   /*      if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -297,5 +333,90 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        private String resp;
+
+        @Override
+        protected String doInBackground(String... params) {
+            publishProgress("Sleeping..."); // Calls onProgressUpdate()
+            try {
+                URL url = new URL("http://webassignment3.site88.net/markerXML.xml");
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                InputStream in =new BufferedInputStream(conn.getInputStream());
+
+                String lati = null;
+                String longi= null;
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+
+                Document doc = builder.parse(in);//issue here
+                NodeList nodes = doc.getElementsByTagName("marker");
+
+                for (int i = 0; i < nodes.getLength(); i++) {
+
+                    hm= new HashMap<String, String>();
+                    Node nNode=nodes.item(i);
+                    Element nElement=(Element)nNode;
+                    lati = nElement.getAttribute("lat");
+                    longi = nElement.getAttribute("lng");
+                    resp= String.valueOf(lati);
+                    hm.put("lat",lati);
+                    hm.put("lng",longi);
+                    hm.put("name",nElement.getAttribute("name"));
+                    arrayList.add(i,hm);
+                    Log.v("name",nElement.getAttribute("name"));
+
+                }
+
+
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return resp;
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+
+            //e1.setText(arrayList.get(5).values().toString());
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPreExecute()
+         */
+        @Override
+        protected void onPreExecute() {
+            // Things to be done before execution of long running operation. For
+            // example showing ProgessDialog
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+         */
+        @Override
+        protected void onProgressUpdate(String... text) {
+
+            // Things to be done while execution of long running operation is in
+            // progress. For example updating ProgessDialog
+
+        }
+
+    }
+
 
 }
