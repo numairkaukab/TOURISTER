@@ -2,6 +2,38 @@
 
 @section('mainContent')
 
+<script>
+
+var openRequest = indexedDB.open("tourister",1);
+
+var clientDatabase;
+
+
+ openRequest.onupgradeneeded = function(e) {
+            
+            var thisDB = e.target.result;
+            
+            
+                thisDB.createObjectStore("recommendations");
+                
+            
+            
+            
+        };
+ 
+        openRequest.onsuccess = function(e) {
+            
+            clientDatabase = e.target.result;
+            
+            
+           
+            
+        };
+        
+       
+
+</script>
+
 
 <div width="100%">
     
@@ -58,10 +90,13 @@
 
 <script>
     
-    
+ 
         
         
         
+   
+        
+     
        
         
     
@@ -77,13 +112,18 @@
            for(var i=0; i<msg.length; i++)
            {
              
-            
+             
+             
+                var transaction = clientDatabase.transaction(["recommendations"],"readwrite");
+    var store = transaction.objectStore("recommendations");
+    
+    store.add(msg[i],i);
                  
                    $.get('item/'+msg[i]).done(function(msg2){
                    
                    
                    
-                   $('#recommendedHotelList').append('<li>'+ msg2 +'</li>');
+                   $('#recommendedHotelList').append('<li onclick="openOnMap('+ msg2.id +')" id="' + msg2.id + '">'+ msg2.name +'</li>');
                    
                });
            

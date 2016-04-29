@@ -35,31 +35,7 @@
 </div>
 
 
-<script>
 
-var openRequest = indexedDB.open("tourister",1);
-
-var clientDatabase;
-
- openRequest.onupgradeneeded = function(e) {
-            
-            var thisDB = e.target.result;
-            
-            
-                thisDB.createObjectStore("markers");
-                
-            
-            
-            
-        }
- 
-        openRequest.onsuccess = function(e) {
-            
-            clientDatabase = e.target.result;
-            
-        }
-
-</script>
 
 <script>
 
@@ -119,12 +95,21 @@ var clientDatabase;
     center: {lat: - 34.397, lng: 150.644},
             zoom: 8
     });
+    
+    
+    
+    
+    
     var geocoder = new google.maps.Geocoder;
     $.get('markerXML').done(function(data){
 
     var xml = data;
     var infoWindow = new google.maps.InfoWindow;
     var markers = xml.documentElement.getElementsByTagName("marker");
+    
+    
+   
+    
     var customIcons = {
     hotel: {
     icon: '{!! asset('imgs/hotelTag.png') !!}'
@@ -140,6 +125,9 @@ var clientDatabase;
             }
     };
     for (var i = 0; i < markers.length; i++) {
+        
+         var lat = parseFloat(markers[i].getAttribute("lat"));
+    var lng = parseFloat(markers[i].getAttribute("lng"));
 
     var point = new google.maps.LatLng(
             parseFloat(markers[i].getAttribute("lat")),
@@ -156,12 +144,9 @@ var clientDatabase;
             icon : icon.icon,
     });
     
-    var transaction = clientDatabase.transaction(["markers"],"readwrite");
-    var store = transaction.objectStore("markers");
+  
     
-    
-    
-    //store.add(marker, item_id);
+    markerArray[item_id]=marker;
     
     
     
@@ -300,6 +285,9 @@ var clientDatabase;
 
 
      });
+     
+     
+     
      var drawingManager = new google.maps.drawing.DrawingManager({
      drawingMode: google.maps.drawing.OverlayType.MARKER,
              drawingControl: true,

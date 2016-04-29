@@ -40,7 +40,7 @@
 
         <script>
 
-
+           var markerArray = [];
 
             $(window).load(function () {
 
@@ -151,6 +151,60 @@ function addFriend(event,user){
                 
                 
             }
+            
+            function loadRecommendations(){
+                
+                var oR = indexedDB.open("tourister",1);
+                var cD;
+                
+                 oR.onsuccess = function(e) {
+            
+                    cD = e.target.result;
+            
+            
+                      var t = cD.transaction(["recommendations"],"readwrite");
+                      var st = t.objectStore("recommendations");
+                      
+                      var request = st.getAll();
+                     request.onsuccess = function(e) {  
+                            
+                            var items = e.target.result;
+                             $('#noRMsg').remove();
+                            
+                            for(var i=0; i<items.length; i++){
+                                
+                                 $.get('item/'+items[i]).done(function(msg2){
+                   
+                   
+                   
+                   $('#recommendedHotelList').append('<li onclick="openOnMap('+ msg2.id +')" id="' + msg2.id + '">'+ msg2.name +'</li>');
+                   
+               });
+                                
+                            }
+                            
+                            
+                            
+                            };
+            
+           
+            
+                   };
+                
+                
+                      
+                      
+                
+                
+            }
+            
+            function openOnMap(item){
+            
+             new google.maps.event.trigger(markerArray[item], 'click' );
+            
+            }
+            
+            loadRecommendations();
 
         </script>
 

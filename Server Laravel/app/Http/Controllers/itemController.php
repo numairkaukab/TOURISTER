@@ -12,8 +12,10 @@ class itemController extends BaseController
     public function getItemName($id){
         
         $markers = Marker::find($id);
-        $name = $markers->name;
-        return $name;
+        $data['name'] = $markers->name;
+        $data['id'] = $id;
+        
+        return $data;
          
         
         
