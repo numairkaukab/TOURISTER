@@ -24,6 +24,8 @@
         {!! Html::style('css/jquery-ui.structure.css') !!}
         {!! Html::style('css/jquery-ui.theme.css') !!}
         
+        {!! Html::script('js/webrtc.js') !!}
+        
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.0.1/jquery.rateyo.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.0.1/jquery.rateyo.min.js"></script>
@@ -41,11 +43,40 @@
         <script>
 
            var markerArray = [];
+           var webrtc;
+           var webrtcTourister;
 
             $(window).load(function () {
 
                 $('#load').fadeOut('fast');
                 $('#bodyContent').css('visibility', 'visible');
+                
+                   webrtcTourister = new SimpleWebRTC({
+                  autoRequestMedia: false,
+                  url: 'http://localhost:8888'
+                });
+               
+               webrtcTourister.joinRoom('TOURISTER');
+                
+               webrtcTourister.connection.on('message', function(data){
+                    if(data.type === 'chatInit'){
+                          
+                          if($('#chatWindow').css('visibility')== 'hidden')
+                          {
+                          
+                          
+                          $('#userItem'+data.payload.message).trigger('click');
+                      }
+                      
+                      else{
+                          
+                          
+                          
+                      }
+                        }
+                    }); 
+                
+                
 
             });
 
@@ -79,10 +110,16 @@
               
            });
            
-           function openChatWindow(user){
+           function openChatWindow(user, user_id){
+               
+               var user2 = {!! Auth::user()->id !!};
+               
+               webrtcTourister.sendToAll('chatInit', {message: user2});
                
                $('#chatWindow').css('visibility','visible');
                $('#chatHeading').text(user);
+               
+               startRTC(user_id);
                
            }
            
@@ -99,12 +136,12 @@
                   
                   if(event!=null)
                   {
-                   $('#userList').append('<li onclick="openChatWindow(\''+data+'\')" style="visibility:hidden" id="userItem'+user+'"class="list-group-item"></li>');
+                   $('#userList').append('<li onclick="openChatWindow(\''+data+'\','+ user +')" style="visibility:hidden" id="userItem'+user+'"class="list-group-item"></li>');
                }
                
                else{
                    
-                   $('#userList').append('<li onclick="openChatWindow(\''+data+'\')" id="userItem'+user+'"class="list-group-item"></li>');
+                   $('#userList').append('<li onclick="openChatWindow(\''+data+'\','+ user +')" id="userItem'+user+'"class="list-group-item"></li>');
                    
                }
                var imgURL = '{!! asset("imgs/profile_pictures/'+user+'pic.jpg") !!}'
@@ -205,6 +242,60 @@ function addFriend(event,user){
             }
             
             loadRecommendations();
+            
+            
+          
+           function startRTC(user_id){
+               
+               
+               
+               var user = {!! Auth::user()->id !!};
+               
+               var roomname = "" + user + user_id;
+               
+             
+                webrtc = new SimpleWebRTC({
+                  autoRequestMedia: false,
+                  url: 'http://localhost:8888'
+                });
+               
+               webrtc.joinRoom(roomname);
+               
+                webrtc.connection.on('message', function(data){
+                    if(data.type === 'chat'){
+                          
+                          appendMessages(user_id, data.payload.message);
+                        }
+                    });
+               
+               
+               
+           }
+          
+          
+            function appendMessages(id,msg){
+                
+                var imgURL = '{!! asset("imgs/profile_pictures/'+id+'pic.jpg") !!}'
+                
+                var user = {!! Auth::user()->id !!};
+                
+                if(id == user)
+                {
+                    $('#chatMessages').append('<img class="pull-right img-circle" width="50px" height="50px" src="'+imgURL+'">');
+                }
+                
+                else{
+                    
+                    $('#chatMessages').append('<img class="pull-left img-circle" width="50px" height="50px" src="'+imgURL+'">');
+                }
+                
+                
+                $('#chatMessages').append(' <p style="display:inline">'+msg+'</p>');
+                $('#chatMessages').append('<hr />');
+                
+            }
+           
+            
 
         </script>
 
@@ -241,11 +332,16 @@ function addFriend(event,user){
                     </button>
                     
                 </div>
-  <div id="chatMessages" class="panel-body" style="height:80%">Messages</div>
+                <div id="chatMessages" class="panel-body" style="height:80%">
+                    
+                    
+                   
+                    
+                </div>
   <div class="panel-footer">
       
-      <textarea class="form-control" rows="1" style="width:70%"></textarea>
-      <button class="btn btn-primary btn-sm" style="position:relative; bottom:35px; left:200px;">Send!</button>
+      <textarea id="textMessage" class="form-control" rows="1" style="width:70%"></textarea>
+      <button id="sendMessage" class="btn btn-primary btn-sm" style="position:relative; bottom:35px; left:200px;">Send!</button>
       
   </div>
                 
@@ -523,6 +619,20 @@ function addFriend(event,user){
             </script>
             
             <script>
+                
+                    $('#sendMessage').click(function(){
+                        
+                        var user = {!! Auth::user()->id !!};
+                       
+                       var message = $('#textMessage').val();
+                       webrtc.sendToAll('chat', {message: message});
+                       
+                       appendMessages(user, message);
+                       
+                    });
+                    
+                   
+                
                     
                     $.get('friends/'+{!! Auth::user()->id !!}).done(function(data){
                        
@@ -553,6 +663,9 @@ function addFriend(event,user){
                       
                        
                     });
+                    
+                    
+                    
                     
                     </script>
 
