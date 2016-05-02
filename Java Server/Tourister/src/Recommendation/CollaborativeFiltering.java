@@ -22,7 +22,7 @@ public class CollaborativeFiltering {
 	
 	
 	
-	public List<Long> filter() throws IOException, TasteException {
+	public ArrayList<Long>[] filter(int user_id) throws IOException, TasteException {
 		
 		
 		
@@ -33,20 +33,29 @@ public class CollaborativeFiltering {
 		UserSimilarity pearson = new EuclideanDistanceSimilarity(recommendationModel);
 		UserNeighborhood nh = new ThresholdUserNeighborhood(0.1, pearson, recommendationModel);
 		
-		long[] myArray = nh.getUserNeighborhood(1);
+		long[] userNeighborhood = nh.getUserNeighborhood(user_id);
 		
 		UserBasedRecommender recommender = new GenericUserBasedRecommender(recommendationModel, nh, pearson);
 		
-		System.out.println(myArray[0]);
+		System.out.println(userNeighborhood[0]);
 		
-		List<Long> returnArray = new ArrayList<Long>();
+		ArrayList<Long> returnArray[] = new ArrayList[2];
+		
+		for(int i=0; i<userNeighborhood.length ; i++)
+		{
+			returnArray[1].add(userNeighborhood[i]);
+		}
+		
+		
+		
+		
 		int i=0;
 		
-		List<RecommendedItem> recommendations = recommender.recommend(1, 3);
+		List<RecommendedItem> recommendations = recommender.recommend(user_id, 3);
 		for (RecommendedItem recommendation : recommendations) {
 		  System.out.println(recommendation);
 		  
-		  returnArray.add(recommendation.getItemID());
+		  returnArray[0].add(recommendation.getItemID());
 		  i++;
 		  
 		}

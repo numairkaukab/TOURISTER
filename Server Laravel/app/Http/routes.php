@@ -59,7 +59,7 @@ Route::get('username/{id}', ['as' => 'getUserById', 'uses' => 'userController@ge
 
 Route::post('updateHotelPreference', 'userPreferenceController@updateHotelPreference');
 
-Route::get('recommender', 'recommendController@collaborativefilter');
+Route::get('recommender/{id}', 'recommendController@collaborativefilter');
 
 Route::get('item/{id}', 'itemController@getItemName');
 

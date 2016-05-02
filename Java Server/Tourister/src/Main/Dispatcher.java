@@ -25,12 +25,14 @@ public class Dispatcher {
 		
 	}
 	
-	public List<Long> recommend(){
+	public ArrayList<Long>[] recommend(int a){
 		
-		List<Long> returnArray = new ArrayList<Long>();
+		System.out.println(a);
+		
+		ArrayList<Long>[] returnArray = new ArrayList[2];
 		CollaborativeFiltering cf = new CollaborativeFiltering();
 		try {
-			returnArray = cf.filter();
+			returnArray = cf.filter(a);
 		} catch (IOException e) {
 			
 			e.printStackTrace();

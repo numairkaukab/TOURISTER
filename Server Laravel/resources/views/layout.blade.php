@@ -15,9 +15,9 @@
 
         {!! Html::script('js/jquery.js') !!}
         
-        
-        {!! Html::script('js/jquery-ui.js') !!}
         {!! Html::script('js/bootstrap.js') !!}
+        {!! Html::script('js/jquery-ui.js') !!}
+        
         {!! Html::script('js/jquery.slimscroll.js') !!}
         {!! Html::style('css/jquery-ui.css') !!}
         
@@ -191,7 +191,7 @@ function addFriend(event,user){
             
             function loadRecommendations(){
                 
-                var oR = indexedDB.open("tourister",1);
+                var oR = indexedDB.open("tourister",2);
                 var cD;
                 
                  oR.onsuccess = function(e) {

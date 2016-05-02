@@ -11,11 +11,11 @@ require_once("http://localhost:8087/JavaBridge/java/Java.inc");
 class recommendController extends BaseController
 {
     
-    public function collaborativefilter(){
+    public function collaborativefilter($id){
         
         
         $dispatcher = new \java("Main.Dispatcher");
-        $returnArray = java_values($dispatcher->recommend());
+        $returnArray = java_values($dispatcher->recommend($id));
         return $returnArray;
         
         
