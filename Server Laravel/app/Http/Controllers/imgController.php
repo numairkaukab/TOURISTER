@@ -27,5 +27,46 @@ class imgController extends BaseController {
 
         return "Profile Picture Changed Successfully!";
     }
+    
+    public function newUserMale($id){
+        
+         $filename = $id . "pic.jpg";
+         
+         
+
+        Storage::copy('placeholder-profile-male.jpg' , 'profile_pictures/'.$filename);
+
+
+
+
+
+
+
+
+
+        return "Profile Picture Changed Successfully!";
+    }
+    
+
+public function newUserFemale($id){
+        
+         $filename = $id . "pic.jpg";
+         
+         
+
+        Storage::copy('placeholder-profile-female.png' , 'profile_pictures/'.$filename);
+
+
+
+
+
+
+
+
+
+        return "Profile Picture Changed Successfully!";
+    }    
+        
+    
 
 }

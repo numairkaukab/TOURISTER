@@ -34,7 +34,41 @@
 
 </div>
 
+<div class="modal fade" id="autoSuggestModal">
 
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h4 id="asTitle" class="modal-title">Auto Suggest Places</h4>
+
+            </div>
+
+
+            <div id="asBody" class="modal-body">
+                
+                <select class="form-control" id="asSelect">
+                    
+                    
+                </select>
+                
+            </div>
+
+            <div class="modal-footer">
+
+                <button id="asSubmit" class="btn btn-primary">Submit</button>
+                <button class="btn btn-default">Cancel</button>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
 
 
 <script>
@@ -50,17 +84,13 @@
     var hotel = {
     name: "",
             total: "",
+            type: "",
             prpn: "",
             stars: "",
-            userrating: "",
-            roomtype: "",
+            rating: "",
+            room_type: "",
             roomoccupancy: "",
-            features : [{
-            wifi : "",
-                    pool: "",
-                    parking: "",
-                    spa: ""
-            }]
+            features: "",
 
 
     };
@@ -71,14 +101,17 @@
     marker.name = $('#hotelName').val();
     marker.taggedby = "{!! Auth::user()->id !!}";
     hotel.name = $('#hotelName').val();
-    hotel.total = $('#hotelName').val();
-    hotel.prpn = $('#hotelName').val();
-    hotel.roomtype = $('#hotelName').val();
-    hotel.roomoccupancy = $('#hotelName').val();
-    hotel.features['wifi'] = $('#wifi').val();
-    hotel.features['pool'] = $('#pool').val();
-    hotel.features['parking'] = $('#parking').val();
-    hotel.features['spa'] = $('#spa').val();
+    hotel.type = $('#hotelType').val();
+    hotel.total = $('#hotelTotal').val();
+    hotel.prpn = $('#hotelPrpn').val();
+    hotel.room_type = $('#hotelRoomType').val();
+    hotel.roomoccupancy = $('#hotelRoomOccupancy').val();
+    hotel.rating = $("#yourRating").rateYo("rating");
+    hotel.stars = $("#stars").rateYo("rating");
+    hotel.features = $('#hotelFeatures').val();
+    
+    
+   
     var url = '{!! action('tagController@hotelTag') !!}';
     $.post(url, {data : marker, data2: hotel}).done(function(result){
     alert(result);
@@ -147,9 +180,17 @@
   
     
     markerArray[item_id]=marker;
+    var hotelDetails;
     
     
-    
+    if(type=='hotel'){
+        
+        $.ajax({type: 'GET', async: false, url : "hotelDetails/" + item_id}).done(function(msg){
+            hotelDetails = msg;
+        });
+        
+        
+    }
     
     
     
@@ -180,7 +221,13 @@
              
              <h3> ${name} </h3>
              <h6> ${addr} </h6>
-
+     
+            <p><strong>Hotel Type: </strong><small>${hotelDetails.type}</small></p>
+            <p><strong>${hotelDetails.stars}</strong><small> Star Hotel</small></p>
+            <p><strong>Features: </strong><small>${hotelDetails.facilities}</small></p>
+            <p><strong>Price: </strong><small>${hotelDetails.price}</small></p>
+            
+            
 
 
              `;
@@ -342,7 +389,10 @@
              <form>
              <div class = "form-group">
              <label for = "hotelName"> Hotel Name </label>
- <input type = "text" class = "form-control" id = "hotelName" placeholder = "Enter Hotel Name Here" >
+ <input style="width:40%" type = "text" class = "form-control" id = "hotelName" placeholder = "Enter Hotel Name Here" >
+                 
+             <label style="position:absolute; right:10px; top:10px;" for = "hotelType"> Hotel Type </label>
+ <input style="width:40%; position:absolute; right:10px; top:50px;" type = "text" class = "form-control" id = "hotelType" placeholder = "Enter Hotel Type Here" >    
              </div>
 
              <label> Price </label>
@@ -355,22 +405,22 @@
              </select>
 
 
- <input type = "text" class = "form-control" id = "totalPrice" placeholder = "Total" >
- <input type = "text" class = "form-control" id = "perRoomPerNight" placeholder = "Per Room, Per Night" >
+ <input type = "text" class = "form-control" id = "hotelTotal" placeholder = "Total" >
+ <input type = "text" class = "form-control" id = "hotelPrpn" placeholder = "Per Room, Per Night" >
              </div>
 
-             <label for = "rating" > Rating: </label>
+             <h4>Rating</h4>
              <div class = "form-group form-inline" >
              <label > Stars </label>
-             <i class = "fa fa-star" > </i> <i class="fa fa-star"> </i> <i class = "fa fa-star"> </i> <i class="fa fa-star"></i > <i class = "fa fa-star" > </i> 
+             <div  id="stars" ></div> 
                          <label > Your Rating </label>
-             <i class = "fa fa-star"> </i> <i class="fa fa-star"> </i > <i class = "fa fa-star" > </i> <i class="fa fa-star"></i > <i class = "fa fa-star" > </i>
+             <div  id="yourRating" ></div> 
 
                          </div>
 
                          <label > Room </label>
                          <div class = "form-group form-inline" >
-             <select id = "roomType" class = "form-control" >
+             <select id = "hotelRoomType" class = "form-control" >
                          <option > Single </option>
                          <option > Double </option>
                          <option > Triple </option>
@@ -383,31 +433,10 @@
              <input type = "text" class = "form-control" id = "roomOccupants" placeholder = "Room Occupancy" >
                          </div>
 
-                         <label > Features <label >
+                         <label > Features </label >
                          <div class = "form-group" >
-                         <div class = "checkbox" >
-                         <label >
-             <input id = "wifi" type = "checkbox" value = "wifiTrue"> WIFI
-                         </label>
-                         </div>
-
-                         <div class = "checkbox" >
-                         <label >
-             <input id = "pool" type = "checkbox" value = "poolTrue" > Pool
-                         </label>
-                         </div>
-
-                         <div class = "checkbox" >
-                         <label >
-             <input id = "parking" type = "checkbox" value = "parkingTrue" > Parking
-                         </label>
-                         </div>
-
-                         <div class = "checkbox" >
-                         <label >
-             <input id = "spa" type = "checkbox" value = "spaTrue" > SPA
-                         </label>
-                         </div>
+                         
+                         <input class="form-control" id="hotelFeatures" type="text" placeholder="Enter Features Seperated by a comma ' , ' "> 
 
                          </div>
 
@@ -419,6 +448,19 @@
                  $('#tagBody').html(htmlString);
                  $('#tagSubmit').attr('id', 'hotelSubmit');
                  $('#tagModal').modal('show');
+                 
+                 $('#stars').rateYo({
+                     rating:3.6,
+                     starWidth: '15px',
+         ratedFill: "#E74C3C"
+                 });
+                 
+                 $('#yourRating').rateYo({
+                     rating:3.6,
+                     starWidth: '15px',
+         ratedFill: "#E74C3C"
+                 });
+                 
                  }
 
 
@@ -443,10 +485,161 @@
 
 
 
-$('#mainContent').droppable({drop: function(){
-        $('#skyscanner').toggleClass('pulsating_circle');
+$('#mainContent').droppable({drop: function(event, ui){
+        
+        var point = {
+            x: ui.offset.left ,
+            y: ui.offset.top
+        }
+       
+       var ll = point2LatLng(point, map);
+       var geocoder = new google.maps.Geocoder;
+       
+       geocoder.geocode({'location': ll}, function(results, status) {
+
+     if (results[1]) {
+
+      alert(results[1].formatted_address);
+      var str2 = results[1].formatted_address.replace(/[0-9]/g, '');
+      var str3 = str2.replace(/\,/g,"");
+      alert(str3)
+      var encoded = encodeURIComponent(str3);
+      console.log(results[1]);
+      alert(encoded);
+
+      $.get('autosuggest', {data : encoded}).done(function(msg){
+          
+         for(var i=0; i<msg['results'].length; i++)
+         {
+             console.log(msg['results'][i]);
+             $('#asSelect').append('<option value="'+ msg['results'][i].individual_id +'">'+ msg['results'][i].display_name +'</option>');
+             
+         }
+          
+          $('#autoSuggestModal').modal('show');
+          
+      });
+     }
+
+     });
+       
+       function point2LatLng(point, map) {
+  var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+  var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+  var scale = Math.pow(2, map.getZoom());
+  var worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
+  return map.getProjection().fromPointToLatLng(worldPoint);
+}
+        
+        alert(ui.offset.left + ' ' + ui.offset.top);
+        
 }});
 
+
+$('#asSubmit').click(function(){
+   
+   var send = $('#asSelect').val();
+   
+   $.get('fetch', {data: send}).done(function(msg){
+       
+       console.log(msg);
+       
+       var hotelDetails = {
+           name : "",
+           lat : "",
+           lng : "",
+           point: "",
+           addr : "",
+           type : "",
+           stars : "",
+           features : [],
+           features_display: "",
+           rating : "",
+           price: "",
+           room_type : "", 
+       };
+       
+       for(var i=0; i<msg.hotels.length; i++)
+       {
+           hotelDetails.name = msg.hotels[i].name;
+           hotelDetails.lat = msg.hotels[i].latitude;
+           hotelDetails.lng = msg.hotels[i].longitude;
+           hotelDetails.type = msg.hotels[i].types[0];
+           hotelDetails.stars = msg.hotels[i].star_rating;
+           hotelDetails.price = msg.hotels_prices[i].agent_prices[0].price_total;
+           
+           hotelDetails.point = new google.maps.LatLng(
+            parseFloat(hotelDetails.lat),
+            parseFloat(hotelDetails.lng));
+            
+            var marker = new google.maps.Marker({
+    map: map,
+            position: hotelDetails.point,
+            icon : '{!! asset('imgs/hotelTag.png') !!}'
+            
+    });
+           
+           
+           
+           for(var j=0; j<msg.hotels[i].amenities.length; j++)
+           {
+               hotelDetails.features[j] = msg.hotels[i].amenities[j];
+               
+           }
+           
+           for(var j=0; j<hotelDetails.features.length; j++)
+           {
+               for(var k=0; k<msg.amenities.length; k++)
+               {
+                   if
+                   (msg.amenities[k].id == hotelDetails.features[j])
+                   {
+                       hotelDetails.features_display = hotelDetails.features_display.concat(msg.amenities[k].name + " ,");
+                   }
+               }
+           }
+           
+          
+           
+       var html=`
+               <p> Tagged By: <strong>SkyScanner</strong></p>
+   
+   <div id="rating"></div>
+   
+   
+      
+             
+             <h3> ${hotelDetails.name} </h3>
+             <h6>  </h6>
+     
+            <p><strong>Hotel Type: </strong><small>${hotelDetails.type}</small></p>
+            <p><strong>${hotelDetails.stars}</strong><small> Star Hotel</small></p>
+            <p><strong>Features: </strong><small>${hotelDetails.features_display}</small></p>
+            <p><strong>Price: </strong><small>${hotelDetails.price}</small></p>
+            
+            `;
+       var infoWindow = new google.maps.InfoWindow;
+       
+       google.maps.event.addListener(marker, 'click', function() {
+           
+           infoWindow.setContent(html);
+           infoWindow.open(map,marker);
+           
+       });
+       
+       
+      
+       
+       
+       
+           
+       }
+       
+       
+       
+   });
+   
+});
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV1fQD2VC6HoNbuuSPkE0q_QZvDf117PY&callback=initMap&libraries=drawing" async defer></script>

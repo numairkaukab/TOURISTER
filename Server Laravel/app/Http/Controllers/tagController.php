@@ -8,7 +8,7 @@ use App\Marker;
 use App\Hotel;
 use App\hotelPreference;
 
-//require_once("http://localhost:8087/JavaBridge/java/Java.inc");
+
 
 class tagController extends BaseController {
 
@@ -38,6 +38,13 @@ class tagController extends BaseController {
         
         $hotels->name = $data['name'];
         $hotels->addr = $data['addr'];
+        $hotels->type = $data2['type'];
+        $hotels->stars = $data2['stars'];
+        $hotels->price = $data2['total'];
+        $hotels->prpn = $data2['prpn'];
+        $hotels->rating = $data2['rating'];
+        $hotels->room_type = $data2['room_type'];
+        $hotels->facilities = $data2['features'];
         
         $hotels->save();
         
@@ -45,8 +52,7 @@ class tagController extends BaseController {
 
         $markers->save();
 
-        //$ontology = new \java("Ontology");
-        //echo $ontology->updateOntologyWithHotel($data2);
+        
     }
 
 }

@@ -86,7 +86,7 @@
 
                 {!! csrf_field() !!}
 
-                <input id="user" name="email" class="pull-right" type="text" placeholder="&#xF007 Username" style="font-family: bakersfield, fa; position:relative; right:24px; ">
+                <input id="user" name="email" class="pull-right" type="text" placeholder="&#xF007 Email" style="font-family: bakersfield, fa; position:relative; right:24px; ">
 
                 <input id="pass" name="password" class="pull-right" type="password" placeholder="&#xF084 Password" style="font-family: bakersfield, fa; position:relative; top:30px; right:-149px; ">
                 <button type="submit" class="btn btn-sm btn-primary pull-right" style="position:relative; top:60px; right:-323px;">Login</button>
@@ -160,9 +160,11 @@
 
             <div id="signup" style="color:white; background-color: rgba(0,0,0,0.5);position:absolute; top: 200px; right: 60px; width:600px; height: 600px; border-radius:25px;">
 
-                <form method="POST" action="/auth/register">
+                <form method="POST" action="/auth/register" >
 
                     {!! csrf_field() !!}
+                    
+                    
 
                     <div class="input-group input-group-lg" style="position:relative; left:50px; top:150px; width:80%; ">
 
@@ -172,8 +174,43 @@
 
 
                     <br />
+                    
+                     <div class="input-group input-group-lg" style="position:relative; left:50px; top:150px; width:35%; ">
 
-                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:150px; width:80%; ">
+                        <input  name="fname" type="text" class="form-control" placeholder="First Name">
+
+                    </div>
+
+
+                    <br />
+                    
+                     <div class="input-group input-group-lg" style="position:relative; left:300px; top:85px; width:35%; ">
+
+                        <input  name="lname" type="text" class="form-control" placeholder="Last Name">
+
+                    </div>
+
+
+                    <br />
+                    
+                    <input id="sexVal" name="sex" value="" hidden> 
+                    
+                    <div class="form-inline input-group input-group-lg" style="position:relative; top:90px; left:50px;">
+                        
+                        <label for="sex">Sex: </label>
+                        
+                        <div class="radio" style="position:relative; left:20px;">
+  <label><input type="radio"  id="sex" value="m"> Male</label>
+</div>
+                        
+<div class="radio" style="position:relative; left:30px;">
+  <label><input type="radio"  id="sex" value="f"> Female</label>
+</div>
+                        
+                        
+                    </div>
+
+                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:130px; width:80%; ">
 
                         <input  name="password" type="password" class="form-control" placeholder="Password">
 
@@ -181,7 +218,7 @@
 
                     <br />
 
-                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:150px; width:80%; ">
+                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:130px; width:80%; ">
 
                         <input  name="password_confirmation" type="password" class="form-control" placeholder="Confirm Password">
 
@@ -189,7 +226,7 @@
 
                     <br />
 
-                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:150px; width:80%; ">
+                    <div class="input-group input-group-lg" style="position:relative; left:50px; top:130px; width:80%; ">
 
                         <input   name="email" type="text" class="form-control" placeholder="Email">
 
@@ -197,7 +234,7 @@
 
 
 
-                    <button type="submit" class="btn btn-success btn-block" style="width:80%; position:absolute; bottom:20px; left:50px;">Sign Up</button>
+                    <button id="submitBtn" type="submit" class="btn btn-success btn-block" style="width:80%; position:absolute; bottom:20px; left:50px;">Sign Up</button>
 
                 </form>
             </div>
@@ -220,6 +257,13 @@
 
 
             <script>
+                
+                
+                $('#submitBtn').click(function(){
+                   
+                   $('#sexVal').val($('#sex').val());
+                   
+                });
 
                 $(document).height(900);
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Marker;
+use App\Hotel;
 
 /*
   |--------------------------------------------------------------------------
@@ -17,13 +18,20 @@ use App\Marker;
 
 Route::get('fetch', 'dataFetchController@fetchData');
 
+Route::get('autosuggest', 'dataFetchController@autoSuggest');
+
+Route::post('newUserMale/{id}', 'imgController@newUserMale');
+Route::post('newUserFemale/{id}', 'imgController@newUserFemale');
+
 Route::get('markerXML', function() {
 
     $markers = Marker::all();
+    
 
     $xml = new XMLWriter();
     $xml->openMemory();
     $xml->startDocument();
+    
     $xml->startElement('markers');
     foreach ($markers as $marker) {
         $xml->startElement('marker');
@@ -37,12 +45,49 @@ Route::get('markerXML', function() {
         $xml->endElement();
     }
     $xml->endElement();
+    
+    
+    
     $xml->endDocument();
 
     $content = $xml->outputMemory();
     $xml = null;
 
     return response($content)->header('Content-Type', 'text/xml');
+});
+
+Route::get('hotelXML', function(){
+    
+    $hotels = Hotel::all();
+    
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->startDocument();
+    
+     $xml->startElement('hotels');
+    foreach ($hotels as $hotel) {
+        $xml->startElement('hotel');
+        $xml->writeAttribute('type', $hotel->type);
+        $xml->writeAttribute('stars', $hotel->stars);
+        $xml->writeAttribute('features', $hotel->facilities);
+        $xml->writeAttribute('price', $hotel->price);
+        $xml->writeAttribute('rating', $hotel->rating);
+        $xml->writeAttribute('room_type', $hotel->room_type);
+        $xml->writeAttribute('item_id', $hotel->id);
+        $xml->endElement();
+    }
+    $xml->endElement();
+    
+        $xml->endDocument();
+
+    $content = $xml->outputMemory();
+    $xml = null;
+
+    return response($content)->header('Content-Type', 'text/xml');
+    
+    
+    
 });
 
 Route::post('hotelTag', 'tagController@hotelTag');
@@ -54,6 +99,8 @@ Route::get('ontologies/tourism', function() {
     $file = File::get('C:\TouristerWorkspace\Ontologies\tourism.owl');
     return $file;
 });
+
+Route::get('hotelDetails/{id}', 'hotelController@getHotelDetails');
 
 Route::get('username/{id}', ['as' => 'getUserById', 'uses' => 'userController@getUserById']);
 

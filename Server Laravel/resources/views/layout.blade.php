@@ -15,8 +15,9 @@
 
         {!! Html::script('js/jquery.js') !!}
         
-        {!! Html::script('js/bootstrap.js') !!}
         {!! Html::script('js/jquery-ui.js') !!}
+        {!! Html::script('js/bootstrap.js') !!}
+        
         
         {!! Html::script('js/jquery.slimscroll.js') !!}
         {!! Html::style('css/jquery-ui.css') !!}
@@ -66,13 +67,26 @@
                           
                           
                           $('#userItem'+data.payload.message).trigger('click');
-                      }
+                          $('#isTyping').css('visibility', 'visible');
+                          
+                          
+                          }
+                          
+                          else if(data.type == 'isTyping'){
+                               $('#isTyping').css('visibility', 'visible');
+                          }
+                          
+                          else if (data.type == 'noTyping'){
+                               $('#isTyping').css('visibility', 'hidden');
+                              
+                          }
                       
                       else{
                           
                           
                           
                       }
+                      
                         }
                     }); 
                 
@@ -180,6 +194,8 @@
            }
 
 function addFriend(event,user){
+
+                $('#noFriends').css('display','none');
                 
                 addUserToMessenger(event,user);
                 
@@ -275,6 +291,8 @@ function addFriend(event,user){
           
             function appendMessages(id,msg){
                 
+                $('#isTyping').css('visibility','hidden');
+                
                 var imgURL = '{!! asset("imgs/profile_pictures/'+id+'pic.jpg") !!}'
                 
                 var user = {!! Auth::user()->id !!};
@@ -336,7 +354,7 @@ function addFriend(event,user){
                     
                     
                    
-                    
+                    <p id="isTyping" style="visibility:hidden;position:relative;top:260px;" ><small><em><span id="userTyping"></span> is Typing...</em></small></p>    
                 </div>
   <div class="panel-footer">
       
@@ -428,7 +446,7 @@ function addFriend(event,user){
                         <div class="form-group">
                             <div class="input-group" style="position:relative; right:20px;">
                                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                                <input type="text" class="form-control" placeholder="Search">
+                                <input type="text" class="form-control" placeholder="Semantic Web Search">
 
                             </div>
                         </div>
@@ -447,8 +465,65 @@ function addFriend(event,user){
             <div id="sidebar1" class="navbar navbar-default" style="width:20%; height:100%; position:absolute; left:0px; border-color:#eeeeee;">
 
                 <h6 class="text-center">Logged in as: {!! Auth::user()->fname; !!} {!! Auth::user()->lname; !!}</h6>
+                
+                
+                
+                <?php $placeholder = "" ?>
+                
+                @if (Auth::user()->sex == "m")
+                
+                <script>
+                    
+                    var sex='m';
+                    
+                    function newMale(){
+                        
+                          var user = {!! Auth::user()->id !!};
+                $.post('newUserMale/'+user).done(function(){
+                
+                
+                
+                });
+                    }
+                
+              
+                
+                </script>
+                
+                <?php
+                $placeholder = 'imgs/placeholder-profile-male.jpg';
+                ?>
+                
+                @else
+                
+                  <script>
+                      
+                      var sex='f';
+                      
+                      function newFemale(){
+                          
+                           var user = {!! Auth::user()->id !!};
+                $.post('newUserFemale/'+user).done(function(){
+                
+                
+                
+                });
+                          
+                          
+                      }
+                
+               
+                
+                </script>
+                
+                 <?php
+                $placeholder = 'imgs/placeholder-profile-female.png';
+                ?>
+                
+                @endif
+            
 
-                <img id="profilePic2" style="height:150px; width:150px" class="img-circle center-block" src="{!! asset('imgs/profile_pictures/'. Auth::user()->id .'pic.jpg') !!}">
+                <img id="profilePic2" style="height:150px; width:150px" class="img-circle center-block" src="{!! asset('imgs/profile_pictures/'. Auth::user()->id .'pic.jpg') !!}" onError="if(sex=='m'){this.src='{!! asset($placeholder) !!}' ;newMale()} else{this.src='{!! asset($placeholder) !!}';newFemale()}">
                 <h6 class="text-center"><a id="changePicture">Change Profile Picture</a></h6>
                 <hr />
 
@@ -523,6 +598,8 @@ function addFriend(event,user){
                 <div style="height:50%">
                     <h5 style="font-family:makhina; color:#eb6864;" class="text-center"><i class="fa fa-comments"></i> Messenger</h5>
                     <div id="messenger">
+                        
+                        <img id="noFriends" style="visibility:hidden; position:relative; left:60px; top:30px" src="{!! asset('imgs/no_friends.png') !!}"> 
                     
                     <ul id="userList" class="list-group">
                    
@@ -635,6 +712,18 @@ function addFriend(event,user){
                 
                     
                     $.get('friends/'+{!! Auth::user()->id !!}).done(function(data){
+                        
+                        if(data=="No Friends")
+                        {
+                            $(window).load(function(){
+                              
+                              $('#noFriends').css('visibility', 'visible');
+                            });
+                            
+                            
+                        }
+                       
+                       else{
                        
                        for(var i=0; i<data.length; i++)
                        {
@@ -643,7 +732,7 @@ function addFriend(event,user){
                        
         
                        }
-                       
+                   }
                        
                     });
                     
@@ -653,8 +742,8 @@ function addFriend(event,user){
                        $( "#mapTools" ).toggle( 'fade', {}, 500, function(){
                            
                            $('#skyscanner').draggable({drag : function(){
-                                   $('#skyscanner').addClass('pulsating_circle');
-                           }, containment: [250,60,500,200] });
+                                   
+                           }, containment: "#mainContent" });
                           
                            
                            $('#skyscanner').show('drop',{direction:'up'}, 500);
@@ -664,7 +753,11 @@ function addFriend(event,user){
                        
                     });
                     
-                    
+                    $('#textMessage').change(function(){
+                       
+                       webrtcTourister.sendToAll('isTyping');
+                       
+                    });
                     
                     
                     </script>

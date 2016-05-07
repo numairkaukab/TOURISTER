@@ -4,23 +4,41 @@ namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use App\Marker;
+use Illuminate\Http\Request;
 
 class dataFetchController extends BaseController {
 
-    public function fetchData() {
+    public function autoSuggest(Request $request){
 
-        $skyscannerurl = 'http://partners.api.skyscanner.net/apiservices/hotels/liveprices/v2/UK/EUR/en-GB/27539733/2016-04-04/2016-11-04/2/1';
+        $curl = new \anlutro\cURL\cURL;
+       $location = $request->input('data');
+       
+        $autosuggesturl = 'http://partners.api.skyscanner.net/apiservices/hotels/autosuggest/v2/UK/EUR/en-GB/'.$location.'?apikey=prtl6749387986743898559646983194';
+        $response = $curl->get($autosuggesturl);
+        return json_decode($response->body, true);
+        
+        
+    }
+    
+    public function fetchData(Request $request){
+        
+        $loc = $request->input('data');
+        $curl = new \anlutro\cURL\cURL;
+        
+        $skyscannerurl = 'http://partners.api.skyscanner.net/apiservices/hotels/liveprices/v2/UK/EUR/en-GB/'.$loc.'/2016-05-14/2016-05-21/2/1';
         $apiKEY = "prtl6749387986743898559646983194";
 
 
 
-        $curl = new \anlutro\cURL\cURL;
+        
 
         $url = $curl->buildUrl($skyscannerurl, ['apiKey' => $apiKEY]);
 
 
 
         $response = $curl->get($url);
+        
+        
 
         $url = "http://partners.api.skyscanner.net" . $response->headers['location'] . "";
 
@@ -33,23 +51,9 @@ class dataFetchController extends BaseController {
         $jsondecode = json_decode($datajson, true);
 
 
-        var_dump($jsondecode['hotels']);
+        return $jsondecode;
 
-        foreach ($jsondecode['hotels'] as $row) {
-            $markers = new Marker;
-            $markers->lat = $row['latitude'];
-            $markers->lng = $row['longitude'];
-            $markers->name = $row['name'];
-            $markers->addr = $row['address'];
-            $markers->tagged_by = "SkyScanner";
-            $markers->type = "hotel";
-
-
-
-            $markers->save();
-        }
-
-        echo "Done";
+       
     }
 
 }
