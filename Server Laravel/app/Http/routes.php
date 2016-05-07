@@ -112,9 +112,14 @@ Route::get('item/{id}', 'itemController@getItemName');
 
 Route::post('friends/{id1}/{id2}', 'friendController@addFriend');
 
+Route::post('addHotelToIndex/{id}', 'contentFilteringController@addHotelToIndex');
+Route::get('contentFilter/{id}', 'contentFilteringController@filter');
+
 Route::get('friends/{id}', 'friendController@getFriends');
 
 Route::get('hotelPreference/{id1}/{id2}', 'userPreferenceController@getHotelPreference');
+
+
 
 
 
@@ -144,6 +149,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('auth/register', 'Auth\AuthController@getRegister');
     Route::post('auth/register', 'Auth\AuthController@postRegister');
 
+    Route::get('profile', function(){
+    
+    return view('profile');
+    
+});
 
     Route::get('recommend', function(){
        

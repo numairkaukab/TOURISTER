@@ -52,7 +52,7 @@ class tagController extends BaseController {
 
         $markers->save();
 
-        
+        return $hotels->id;
     }
 
 }

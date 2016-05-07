@@ -114,7 +114,12 @@
    
     var url = '{!! action('tagController@hotelTag') !!}';
     $.post(url, {data : marker, data2: hotel}).done(function(result){
-    alert(result);
+    
+        $.post('addHotelToIndex/'+result).done(function(){
+            alert("Ok!");
+        });
+        
+        alert(result);
     });
     });</script>
 
@@ -226,7 +231,10 @@
             <p><strong>${hotelDetails.stars}</strong><small> Star Hotel</small></p>
             <p><strong>Features: </strong><small>${hotelDetails.facilities}</small></p>
             <p><strong>Price: </strong><small>${hotelDetails.price}</small></p>
-            
+                
+                
+            <button class="btn btn-sm btn-success"><i class="fa fa-thumbs-up"></i> Like</button>
+            <button class="btn btn-sm btn-primary"><i class="fa fa-thumbs-down"></i> Dislike</button> 
             
 
 
@@ -280,6 +288,25 @@
      google.maps.event.addListener(marker, 'click', function() {
      infoWindow.setContent(html);
      infoWindow.open(map, marker);
+     
+     $.get('contentFilter/'+data2.item).done(function(msg){
+         
+           $('#hotels').effect('highlight', {}, 1000);
+           $('#hotels').append(' <span class="badge"> '+ msg.length +' </span>');
+           $('#noRMsg').remove();
+           
+           $('#recommendedHotelList').html("");
+           
+            $.get('item/'+msg).done(function(msg2){
+                   
+                   
+                   
+                   $('#recommendedHotelList').append('<li onclick="openOnMap('+ msg2.id +')" id="' + msg2.id + '">'+ msg2.name +'</li>');
+                   
+               });
+           
+           
+     });
      
      if(data2.type=="hotel"){
          
@@ -616,6 +643,9 @@ $('#asSubmit').click(function(){
             <p><strong>${hotelDetails.stars}</strong><small> Star Hotel</small></p>
             <p><strong>Features: </strong><small>${hotelDetails.features_display}</small></p>
             <p><strong>Price: </strong><small>${hotelDetails.price}</small></p>
+                
+            <button class="btn btn-sm btn-success"><i class="fa fa-thumbs-up"></i> Like</button>
+            <button class="btn btn-sm btn-primary"><i class="fa fa-thumbs-down"></i> Dislike</button>     
             
             `;
        var infoWindow = new google.maps.InfoWindow;

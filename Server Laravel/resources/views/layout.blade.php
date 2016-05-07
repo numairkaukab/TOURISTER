@@ -18,14 +18,21 @@
         {!! Html::script('js/jquery-ui.js') !!}
         {!! Html::script('js/bootstrap.js') !!}
         
-        
+        {!! Html::script('js/jquery.bootstrap-duallistbox.js') !!}
         {!! Html::script('js/jquery.slimscroll.js') !!}
+        
+        
+        
         {!! Html::style('css/jquery-ui.css') !!}
         
         {!! Html::style('css/jquery-ui.structure.css') !!}
         {!! Html::style('css/jquery-ui.theme.css') !!}
+        {!! Html::style('css/bootstrap-duallistbox.css') !!}
         
         {!! Html::script('js/webrtc.js') !!}
+        
+        
+        
         
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.0.1/jquery.rateyo.min.css">
@@ -528,7 +535,7 @@ function addFriend(event,user){
                 <hr />
 
                 <ul class="text-center nav nav-pills nav-stacked" style="font-family:makhina;color:black; ">
-                    <li><a href="">Profile Builder</a></li>
+                    <li><a href="profile">Profile Builder</a></li>
                     <hr />
                     <li><a href="recommend">Recommender Service</a></li>
                     <hr />
