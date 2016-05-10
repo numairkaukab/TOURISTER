@@ -103,10 +103,10 @@
     hotel.name = $('#hotelName').val();
     hotel.type = $('#hotelType').val();
     hotel.total = $('#hotelTotal').val();
-    hotel.prpn = $('#hotelPrpn').val();
+    
     hotel.room_type = $('#hotelRoomType').val();
-    hotel.roomoccupancy = $('#hotelRoomOccupancy').val();
-    hotel.rating = $("#yourRating").rateYo("rating");
+    
+    
     hotel.stars = $("#stars").rateYo("rating");
     hotel.features = $('#hotelFeatures').val();
     
@@ -142,7 +142,9 @@
     $.get('markerXML').done(function(data){
 
     var xml = data;
-    var infoWindow = new google.maps.InfoWindow;
+    var infoWindow = new google.maps.InfoWindow({
+        
+    });
     var markers = xml.documentElement.getElementsByTagName("marker");
     
     
@@ -216,6 +218,7 @@
 
     var html = `
 
+<div id="infoWindowContent" style="width:400px;">
 
  <p> Tagged By: <a href = "#" id = "profile${taggedby}" data-content = "<p style=' position:absolute; top:15px;'>${data}</p>  <button id='addFriend' style='position:absolute; bottom:35px; left:15px;' onclick='addFriend(event, ${taggedby} )' class='btn btn-primary btn-xs'>Add Friend</button> <img style='position:absolute; top:15px; right:15px;' width='100px' height='100px'src='{!! asset('imgs/profile_pictures/${taggedby}pic.jpg') !!}'>" onmousedown = 'renderPopover(event)' > ${data} </a></p>
    
@@ -232,11 +235,20 @@
             <p><strong>Features: </strong><small>${hotelDetails.facilities}</small></p>
             <p><strong>Price: </strong><small>${hotelDetails.price}</small></p>
                 
+             <img src="http://placehold.it/206x150" style="position:absolute; top:0px; left:200px;">
+                         <img src="http://placehold.it/66x85" style="position:absolute; top:155px; left:200px;">  
+                                     <img src="http://placehold.it/66x85" style="position:absolute; top:155px; left:270px;">  
+                                                 <img src="http://placehold.it/66x85" style="position:absolute; top:155px; left:340px;"> 
+                                                             
+                                                             <br />
+                         
+            <button class="btn btn-sm btn-default" style="position:absolute;right:20px;"><i class="fa fa-photo"></i> Upload Photos</button>    
                 
-            <button class="btn btn-sm btn-success"><i class="fa fa-thumbs-up"></i> Like</button>
-            <button class="btn btn-sm btn-primary"><i class="fa fa-thumbs-down"></i> Dislike</button> 
+            <button id="like" class="btn btn-sm btn-success"><i class="fa fa-thumbs-up"></i> Like</button>
+            <button id="dislike" class="btn btn-sm btn-primary"><i class="fa fa-thumbs-down"></i> Dislike</button> 
+            <button class="btn btn-sm btn-default" style="position:absolute;right:150px;"><i class="fa fa-comment"></i> Comments</button>
             
-
+</div>
 
              `;
              
@@ -289,19 +301,59 @@
      infoWindow.setContent(html);
      infoWindow.open(map, marker);
      
+     $('#like').click(function(){
+        
+        $.post('like/'+data2.user+'/'+data2.item+'/like').done(function(msg){
+            
+            alert(msg);
+            
+        });
+        
+     });
+     
+      $('#dislike').click(function(){
+        
+        $.post('like/'+data2.user+'/'+data2.item+'/dislike').done(function(msg){
+            
+            alert(msg);
+            
+        });
+        
+     });
+    
+     var hotelIcon = "{!! asset('imgs/hotelTag.png') !!}";
+     for(var i=1; i<markerArray.length; i++){
+         markerArray[i].setIcon(hotelIcon);
+     }
+     
+    
      $.get('contentFilter/'+data2.item).done(function(msg){
          
+           
+         
+           $('#hotelBadge').html("");
+           var icon = "{!! asset('imgs/hotelTag.gif') !!}";
+         
            $('#hotels').effect('highlight', {}, 1000);
-           $('#hotels').append(' <span class="badge"> '+ msg.length +' </span>');
+           $('#hotelBadge').append(' <span class="badge"> '+ msg.length +' </span>');
            $('#noRMsg').remove();
            
            $('#recommendedHotelList').html("");
            
             $.get('item/'+msg).done(function(msg2){
                    
+                   markerArray[msg2.id].setIcon(icon);
+                   markerArray[msg2.id].setOptions({optimized:false});
+                   
+                   $.get('hotelDetails/'+msg2.id).done(function(msg3){
+                       
+                       var html=' <li onclick="openOnMap('+ msg2.id +')" id="' + msg2.id + '" class="list-group-item"> <small style="position:absolute; right:18px;">#</small><strong style="position:absolute; right:10px;">1</strong> <p><strong> </strong><small>'+msg3.name+'</small></p><p><strong> </strong><small>'+msg3.addr+'</small></p><button class="btn btn-success">Click to Open on Map</button> </li>';
+                       
+                       $('#recommendedHotelList').append(html);
+                       
+                   });
                    
                    
-                   $('#recommendedHotelList').append('<li onclick="openOnMap('+ msg2.id +')" id="' + msg2.id + '">'+ msg2.name +'</li>');
                    
                });
            
@@ -416,13 +468,29 @@
              <form>
              <div class = "form-group">
              <label for = "hotelName"> Hotel Name </label>
- <input style="width:40%" type = "text" class = "form-control" id = "hotelName" placeholder = "Enter Hotel Name Here" >
+ <input style="" type = "text" class = "form-control" id = "hotelName" placeholder = "Enter Hotel Name Here" >
                  
-             <label style="position:absolute; right:10px; top:10px;" for = "hotelType"> Hotel Type </label>
- <input style="width:40%; position:absolute; right:10px; top:50px;" type = "text" class = "form-control" id = "hotelType" placeholder = "Enter Hotel Type Here" >    
+               
+             </div>
+     
+     <div class="form-group">
+     
+             <label style="" for = "hotelType"> Hotel Type </label>
+ <select style="" class = "form-control" id = "hotelType" >
+             <option>Hotel</option>
+     <option>Guest House</option>
+     <option>Apartment</option>
+     <option>Resort</option>
+     <option>Bed and Breakfast</option>
+     <option>Private Home</option>
+     <option>Hostel</option>
+     <option>Country House</option>
+             
+             </select>  
+             
              </div>
 
-             <label> Price </label>
+             <label>Room Price </label>
              <div class = "form-group form-inline" >
  <select id = "currency" class = "form-control" >
              <option > USD </option>
@@ -433,31 +501,28 @@
 
 
  <input type = "text" class = "form-control" id = "hotelTotal" placeholder = "Total" >
- <input type = "text" class = "form-control" id = "hotelPrpn" placeholder = "Per Room, Per Night" >
+ 
              </div>
 
-             <h4>Rating</h4>
+            
              <div class = "form-group form-inline" >
              <label > Stars </label>
              <div  id="stars" ></div> 
-                         <label > Your Rating </label>
-             <div  id="yourRating" ></div> 
+             </div>            
 
-                         </div>
-
-                         <label > Room </label>
+                         <label > Room Types</label>
                          <div class = "form-group form-inline" >
              <select id = "hotelRoomType" class = "form-control" >
                          <option > Single </option>
-                         <option > Double </option>
-                         <option > Triple </option>
-                         <option > Twin </option>
+                         
+                         
+                         
                          <option > Family Suite </option>
-                         <option > Presidential Suite </option>
+                         <option > Presidential/Executive Suite </option>
 
                          </select>
 
-             <input type = "text" class = "form-control" id = "roomOccupants" placeholder = "Room Occupancy" >
+             
                          </div>
 
                          <label > Features </label >
@@ -482,11 +547,7 @@
          ratedFill: "#E74C3C"
                  });
                  
-                 $('#yourRating').rateYo({
-                     rating:3.6,
-                     starWidth: '15px',
-         ratedFill: "#E74C3C"
-                 });
+               
                  
                  }
 

@@ -25,7 +25,7 @@
         
         {!! Html::style('css/jquery-ui.css') !!}
         
-        {!! Html::style('css/jquery-ui.structure.css') !!}
+        
         {!! Html::style('css/jquery-ui.theme.css') !!}
         {!! Html::style('css/bootstrap-duallistbox.css') !!}
         
@@ -37,12 +37,16 @@
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.0.1/jquery.rateyo.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.0.1/jquery.rateyo.min.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV1fQD2VC6HoNbuuSPkE0q_QZvDf117PY&libraries=places"></script>
+
 
         <style>
 
             #bodyContent{
                 visibility:hidden;
             }
+            
+           
 
         </style>
 
@@ -125,7 +129,9 @@
 
            $(document).ready(function(){
               
-              $('#accordion').accordion();
+              $('#accordion').accordion({
+                  heightStyle: 'content',
+              });
               $('#recommendations').slimScroll();
               $('#messenger').slimScroll();
               
@@ -558,16 +564,23 @@ function addFriend(event,user){
                     
                     <div id="accordion">
                         
-                        <h3 id="hotels"><i class="fa fa-bed"></i> Hotels</h3> 
-                            <div>
+                        <h3 id="hotels"><i class="fa fa-bed"></i> Hotels<span id="hotelBadge"></span></h3> 
+                            <div >
                                 <div style="font-size:12px;">
-                                 <p id="noRMsg">No Recommendations Available</p>
+                                 <p id="noRMsg" class="text-center">No Recommendations Available</p>
                                     
-                                <ul id="recommendedHotelList">
-                                        
+                                
+                                    
+                                 <div id="recommendedHotelList">
+                                     
+                                    
+                                     
+                                 </div>
                                    
                                     
-                                </ul>
+                                
+                                 
+                                 
                                     
                                 
                                 </div>
@@ -578,17 +591,17 @@ function addFriend(event,user){
                             </div>
                         
                          <h3><i class="fa fa-calendar"></i> Events</h3> 
-                            <div>
+                            <div >
                                 <p style="font-size:12px;">No Recommendations Available</p>
                             </div>
                          
                          <h3><i class="fa fa-map-marker"></i> Attractions</h3> 
-                            <div>
+                            <div >
                                 <p style="font-size:12px;">No Recommendations Available</p>
                             </div>
                          
                          <h3><i class="fa fa-cutlery"></i> Restaurants</h3> 
-                            <div>
+                         <div >
                                 <p style="font-size:12px;">No Recommendations Available</p>
                             </div>
                          

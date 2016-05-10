@@ -112,12 +112,17 @@ Route::get('item/{id}', 'itemController@getItemName');
 
 Route::post('friends/{id1}/{id2}', 'friendController@addFriend');
 
+Route::post('like/{id}/{id2}/{pref}', 'userPreferenceController@like');
+
 Route::post('addHotelToIndex/{id}', 'contentFilteringController@addHotelToIndex');
+Route::get('contentFilterU', 'contentFilteringController@generateUserProfile');
 Route::get('contentFilter/{id}', 'contentFilteringController@filter');
 
 Route::get('friends/{id}', 'friendController@getFriends');
 
 Route::get('hotelPreference/{id1}/{id2}', 'userPreferenceController@getHotelPreference');
+
+Route::get('learnProfile/{id}', 'userPreferenceController@learnProfile');
 
 
 
