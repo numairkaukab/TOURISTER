@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -27,9 +28,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,12 +82,10 @@ public class MainActivity extends AppCompatActivity
     private Button sub;
     ArrayList<HashMap<String, String>> arrayList = new ArrayList<HashMap<String,String>>();
     HashMap<String, String> hm ;
+    android.support.v4.app.FragmentManager aMap;
+    GoogleMap map;
+    DrawerLayout drawer;
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
     private static final int PLACE_PICKER_REQUEST = 1;
 
     @Override
@@ -96,10 +97,21 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
         AsyncTaskRunner runner = new AsyncTaskRunner();
         runner.execute();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        aMap = getSupportFragmentManager();
+        if (!myMapFragment.isAdded()) {
+            aMap.beginTransaction().add(R.id.map, myMapFragment).commit();
+        }
+        else {
+            aMap.beginTransaction().show(myMapFragment).commit();
+        }
+
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +119,7 @@ public class MainActivity extends AppCompatActivity
 
                 try {
                     startActivityForResult(builder.build(MainActivity.this), PLACE_PICKER_REQUEST);
+
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
@@ -119,7 +132,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -132,9 +145,7 @@ public class MainActivity extends AppCompatActivity
 
 
         myMapFragment.getMapAsync(this);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     @Override
@@ -163,6 +174,10 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            drawer.openDrawer(GravityCompat.END);
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view2);
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.setItemIconTintList(null);
             return true;
         }
 
@@ -176,7 +191,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         final ImageView imageView = (ImageView) findViewById(R.id.imageView2);
 
-        android.support.v4.app.FragmentManager aMap = getSupportFragmentManager();
+
         if (imageView != null) {
             imageView.setVisibility(View.INVISIBLE);
         }
@@ -189,16 +204,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_gallery) {
 
-    /*        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-            try {
-                startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-            } catch (GooglePlayServicesRepairableException e) {
-                e.printStackTrace();
-            } catch (GooglePlayServicesNotAvailableException e) {
-                e.printStackTrace();
-            }
-*/
             if (!myMapFragment.isAdded())
                 aMap.beginTransaction().add(R.id.map, myMapFragment).commit();
 
@@ -224,12 +229,16 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.END);
         return true;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        myMapFragment.getMapAsync(this);
+
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode ==  RESULT_OK) {
                 final Place place = PlacePicker.getPlace(data, this);
@@ -245,22 +254,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-
+        map=googleMap;
         for(int i=0;i<arrayList.size();i++){
             googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(Double.parseDouble(arrayList.get(i).get("lat")), Double.parseDouble(arrayList.get(i).get("lng"))))
                     .title(arrayList.get(i).get("name"))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
 
-            Log.v("christmas"+"="+i,arrayList.get(i).get("lat"));
-        }
+            Log.v("christmas" + "=" + i, arrayList.get(i).get("lat"));
 
+
+
+        }
 
 
 
     if(check) {
             //Intent tag = new Intent(MainActivity.this, TagPOI.class);
-            //startActivity(tag);
+           // startActivity(tag);
+
             my_pop();
 
 
@@ -270,17 +282,11 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
 
 
-// Move the camera instantly to Sydney with a zoom of 15.
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lt, 15));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lt, 15));
+            googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
-// Zoom in, animating the camera.
-        googleMap.animateCamera(CameraUpdateFactory.zoomIn());
-
-// Zoom out to zoom level 10, animating with a duration of 2 seconds.
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
-            //final String s=getIntent().getStringExtra("type");
-            //final int s2= Integer.parseInt(getIntent().getStringExtra("rate"));
+            check=false;
 
 /*
             googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -307,20 +313,17 @@ public class MainActivity extends AppCompatActivity
 */
 
         }
-  /*      if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
-*/
+
     }
+
+
+
+
     public void my_pop(){
+
+
+
+
         LayoutInflater inflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.pop_up, null, false);
         final PopupWindow pw = new PopupWindow(popupView, 700,1100,true);
@@ -342,7 +345,7 @@ public class MainActivity extends AppCompatActivity
         protected String doInBackground(String... params) {
             publishProgress("Sleeping..."); // Calls onProgressUpdate()
             try {
-                URL url = new URL("http://webassignment3.site88.net/markerXML.xml");
+                URL url = new URL("http://tourister.space/markerXML");
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 InputStream in =new BufferedInputStream(conn.getInputStream());
@@ -389,7 +392,6 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
 
-            //e1.setText(arrayList.get(5).values().toString());
         }
 
         /*
@@ -417,6 +419,5 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
 
 }
