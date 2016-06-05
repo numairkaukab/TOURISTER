@@ -40,136 +40,122 @@ public class touristerOntology {
 	
 	public String prefix = "http://tourister.space/ontologies/tourism#";
 	
+	public void addHotelToOntology(Map a) throws FileNotFoundException{
 	
+		System.out.println("Adding Hotel to Ontology!");
 	
-	
-	 
-	public void addRestaurantToOntology(Map a) throws MalformedURLException, GateException, FileNotFoundException{
-		
-		
-		System.out.println("Adding Restaurant to Ontology!");
-		
-		 String name = a.get("name").toString().replace(" ", "");
+	     String name = a.get("name").toString().replace(" ", "");
 	     String id =   a.get("id").toString();
-		
-		
-		 String city = a.get("city").toString();
+	     
+	     String city = a.get("city").toString();
 	     String country = a.get("country").toString();
 	     String region = a.get("region").toString();
 	     
-	     String[] cuisine =   a.get("cuisine").toString().split(",");
-	     String price =   a.get("price").toString();
-	     String type =   a.get("type").toString().toLowerCase();
-	     
-	     String[] facilities = a.get("facilities").toString().split(",");
-		
-		
+	     String stars =   a.get("stars").toString();
+	     String price =  a.get("price").toString();
+	     String type = a.get("type").toString();
+	     String room_type = a.get("room_type").toString();
+	     String facilitiesStr = a.get("facilities").toString();
+	     String[] facilities = facilitiesStr.split(",");
+		 
 		 OntModel m = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
 		 m.read("C:\\TouristerWorkspace\\Ontologies\\Tourism1.0.0.owl");
 		 
-		 OntClass Restaurant = m.getOntClass(prefix + "Restaurant");
+		 OntClass Hotel = m.getOntClass(prefix + "Hotel");
+		 
+		 
+		 
+		 OntClass Feature = m.getOntClass(prefix + "Feature");
+		 OntClass Rating = m.getOntClass(prefix + "Rating");
+		 OntClass Price = m.getOntClass(prefix + "Price");
+		 OntClass roomType = m.getOntClass(prefix + "Room");
 		 OntClass Location = m.getOntClass(prefix + "Location");
-		 OntClass RestaurantType = m.getOntClass(prefix + "RestaurantType");
-		 OntClass RestaurantCuisine = m.getOntClass(prefix + "Cuisine");
-		 OntClass RestaurantPrice = m.getOntClass(prefix + "RestaurantPrice");
-		 OntClass RestaurantFacility = m.getOntClass(prefix + "RestaurantFacility");
+		 OntClass hotelType = m.getOntClass(prefix + "HotelType");
 		 
+		 OntProperty hasFeature = m.getOntProperty(prefix + "hasFeature");
+		 OntProperty hasLocation = m.getOntProperty(prefix + "hasLocation");
+		 OntProperty hasPrice = m.getOntProperty(prefix + "hasPrice");
+		 OntProperty hasRoom = m.getOntProperty(prefix + "hasRoom");
+		 OntProperty hasRating = m.getOntProperty(prefix + "hasRating");
 		 
-		 OntProperty hasRestaurantType = m.getOntProperty(prefix + "hasRestaurantType");
-		 OntProperty hasRestaurantLocation = m.getOntProperty(prefix + "hasRestaurantLocation");
-		 OntProperty hasRestaurantCuisine = m.getOntProperty(prefix + "hasCuisine");
-		 OntProperty hasRestaurantPrice = m.getOntProperty(prefix + "hasRestaurantPrice");
-		 OntProperty hasRestaurantFacility = m.getOntProperty(prefix + "hasRestaurantFacilities");
+		 OntProperty hasName = m.getOntProperty(prefix + "hasName");
 		 
+		 OntProperty hasFeatureName = m.getOntProperty(prefix + "hasFeatureName");
+		 OntProperty hasRoomTypeName = m.getOntProperty(prefix + "hasRoomTypeName");
+		 OntProperty hasHotelTypeName = m.getOntProperty(prefix + "hasHotelTypeName");
 		 
-		 OntProperty hasRestaurantPriceAmount = m.getOntProperty(prefix + "hasRestaurantPriceAmount");
-		 OntProperty hasRestaurantName = m.getOntProperty(prefix + "hasRestaurantName");
-		 OntProperty hasCuisineName = m.getOntProperty(prefix + "hasCuisineName");
-		 OntProperty hasRestaurantTypeName = m.getOntProperty(prefix + "hasRestaurantTypeName");
-		 OntProperty hasRestaurantFacilityName = m.getOntProperty(prefix + "hasRestaurantFacilityName");
-		
-		 
+		 OntProperty hasID = m.getOntProperty(prefix + "hasID");
 		 OntProperty hasCity = m.getOntProperty(prefix + "hasCity");
 		 OntProperty hasCountry = m.getOntProperty(prefix + "hasCountry");
 		 OntProperty hasRegion = m.getOntProperty(prefix + "hasRegion");
-		 OntProperty hasRestaurantID = m.getOntProperty(prefix + "hasRestaurantID");
+		 OntProperty hasStarRating = m.getOntProperty(prefix + "hasStarRating");
+		 OntProperty hasUnit = m.getOntProperty(prefix + "hasUnit");
+		 OntProperty hasUserRating = m.getOntProperty(prefix + "hasUserRating");
+		 OntProperty hasValue = m.getOntProperty(prefix + "hasValue");
+		 OntProperty hasType = m.getOntProperty(prefix + "hasType");
+		 
+		 Individual hotelInd = Hotel.createIndividual(prefix + name);
+		 
+		 
+		 
 		
+		 Individual featureInd = Feature.createIndividual(prefix + name + "Feature");
+		 Individual ratingInd = Rating.createIndividual(prefix + name + "Rating");
+		 Individual priceInd = Price.createIndividual(prefix + name + "Price");
+		 Individual roomTypeInd = roomType.createIndividual(prefix + name + "Room");
+		 Individual hotelTypeInd = hotelType.createIndividual(prefix + name + "Type");
+		 Individual locationInd = Location.createIndividual(prefix + name + "Location");
 		 
-		 Individual RestaurantInd = Restaurant.createIndividual(prefix + name + "Restaurant");
-		 Individual LocationInd = Location.createIndividual(prefix + name + "Location");
-		 Individual RestaurantTypeInd = RestaurantType.createIndividual(prefix + name + "RestaurantType");
-		 Individual RestaurantCuisineInd = RestaurantCuisine.createIndividual(prefix + name + "Cuisine");
-		 Individual RestaurantPriceInd = RestaurantPrice.createIndividual(prefix + name + "RestaurantPrice");
-		 Individual RestaurantFacilityInd = RestaurantFacility.createIndividual(prefix + name + "RestaurantFacility");
+		 locationInd.addProperty(hasCity, city, "string");
+		 locationInd.addProperty(hasCountry, country, "string");
+		 locationInd.addProperty(hasRegion, region, "string");
 		 
+		 hotelTypeInd.addProperty(hasHotelTypeName, type, "string");
 		 
-
-		 LocationInd.addProperty(hasCity, city, "string");
-		 LocationInd.addProperty(hasCountry, country, "string");
-		 LocationInd.addProperty(hasRegion, region, "string");
+		 hotelInd.addProperty(hasLocation, locationInd);
 		 
-		 RestaurantInd.addProperty(hasRestaurantLocation, LocationInd);
+		 hotelInd.addProperty(hasName, name, "string");
+		 hotelInd.addProperty(hasID, id, "string");
 		 
+		 hotelInd.addProperty(hasRating, ratingInd);
+		 hotelInd.addProperty(hasType, hotelTypeInd);
 		 
-for(int i=0; i<cuisine.length; i++){
-			 
-			 String cuisineTrim = cuisine[i].trim().replace("-", " ").toLowerCase();
-			 RestaurantCuisineInd.addProperty(hasCuisineName, cuisineTrim, "string");
-			 
-		 }
+		 ratingInd.addProperty(hasStarRating, stars , "string");
 		 
+		 hotelInd.addProperty(hasPrice, priceInd);
 		 
-		 
-		 RestaurantInd.addProperty(hasRestaurantCuisine, RestaurantCuisineInd);
-		 
-		 
-		 
-		 RestaurantInd.addProperty(hasRestaurantType, RestaurantTypeInd);
-		 RestaurantTypeInd.addProperty(hasRestaurantTypeName, type, "string"); 
-        
+		 priceInd.addProperty(hasValue, price, "string");
 		 
 		 
 		 
-      for(int i=0; i<facilities.length; i++){
+		 
+		 
+		 for(int i=0; i<facilities.length; i++){
 			 
 			 String facilitiesTrim = facilities[i].trim().replace("-", " ").toLowerCase();
-			 RestaurantFacilityInd.addProperty(hasRestaurantFacilityName, facilitiesTrim, "string");
+			 featureInd.addProperty(hasFeatureName, facilitiesTrim, "string");
 			 
 		 }
 		 
-		 
-		 RestaurantInd.addProperty(hasRestaurantFacility, RestaurantFacilityInd);
-		 
-        
-		 RestaurantPriceInd.addProperty(hasRestaurantPriceAmount, price);
-		 RestaurantInd.addProperty(hasRestaurantPrice, RestaurantPriceInd);
+		 hotelInd.addProperty(hasFeature, featureInd);
 		 
 		 
-		 
-		 RestaurantInd.addProperty(hasRestaurantName, name, "string");
-		 RestaurantInd.addProperty(hasRestaurantID, id, "string");
-		 
+		 roomTypeInd.addProperty(hasRoomTypeName, room_type, "string");
+		 hotelInd.addProperty(hasRoom, roomTypeInd);
 		 
 		 
 		 
 		 OutputStream out = new FileOutputStream("C:\\TouristerWorkspace\\Ontologies\\Tourism1.0.0.owl");
 		 m.write(out, "RDF/XML");
-		
-		
-		
-		
-		
-		
-
-	    
-	    System.out.println("Done!");
-
- 
-
-
-		
-		
+		 
+		 
+		 System.out.println("Success: Adding Hotel to Ontology!");
+	 
+	
+    
 	}
+	
+	
 	  
 	
 
