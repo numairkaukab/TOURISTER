@@ -336,7 +336,55 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+public void tag_write(){
 
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://tourister.space/hotelTag",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                       // Toast.makeText(MainActivity.this,response,Toast.LENGTH_LONG).show();
+                        Log.e("result", response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+
+
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> data = new HashMap<String, String>();
+                //Map<String,Map> dat=new HashMap<String,Map>();
+                data.put("name", (String) place.getName());
+                data.put("taggedby", "A");
+                data.put("addr", (String) place.getAddress());
+                data.put("type","hotel");
+                data.put("lat", String.valueOf(place.getLatLng().latitude));
+                data.put("lng", String.valueOf(place.getLatLng().longitude));
+                data.put("city","");
+                data.put("country","");
+                data.put("region","");
+                data.put("stars", String.valueOf(place.getRating()));
+                data.put("total","");
+                data.put("room_type","");
+                data.put("features","");
+
+
+
+
+                //dat.put("data",data);
+                Log.v("result", String.valueOf(data));
+                return data;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         private String resp;
