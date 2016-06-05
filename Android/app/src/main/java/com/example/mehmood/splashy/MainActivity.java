@@ -385,6 +385,46 @@ public void tag_write(){
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+
+public void recommend_hotel(){
+
+        JsonArrayRequest jsonRequest = null;
+        jsonRequest = new JsonArrayRequest(Request.Method.GET, "http://tourister.space/contentFilter/"+hotel_id,new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                //Log.e("Respsne is=", String.valueOf(response.get(String.valueOf(0))));
+                Log.e("Respsne222 is=", String.valueOf(response));
+                for(int i=0;i<response.length();i++){
+                    try {
+                        Log.e("Resp="+i, String.valueOf(response.get(i)));
+                        hotel_detail= Integer.parseInt((String) response.get(i)) ;
+                        for(int j=0;j<arrayList.size();j++){
+                            if(hotel_detail == Integer.parseInt(arrayList.get(j).get("item_id"))){
+                                recoText.append("Hotel ID = "+arrayList.get(j).get("item_id")+"\n"+arrayList.get(j).get("name")+"\n"+arrayList.get(j).get("addr")+"\n\n");
+                            }
+                        }
+                        hotels_detail();
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                //TODO: handle failure
+            }
+        });
+
+        Volley.newRequestQueue(this).add(jsonRequest);
+    }
+
+    
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         private String resp;
