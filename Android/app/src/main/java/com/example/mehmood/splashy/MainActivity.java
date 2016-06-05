@@ -424,7 +424,32 @@ public void recommend_hotel(){
         Volley.newRequestQueue(this).add(jsonRequest);
     }
 
-    
+ public void hotels_detail(){
+
+        StringRequest  jsonRequest = null;
+        jsonRequest = new StringRequest (Request.Method.GET, "http://tourister.space/hotelDetails/"+hotel_detail,new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //Log.e("Respsne is=", String.valueOf(response.get(String.valueOf(0))));
+                Log.e("Respsne999 is=", String.valueOf(response));
+
+
+
+              //  recoText.append(response);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Log.e("Resp=lll", String.valueOf(error));
+            }
+        });
+
+        Volley.newRequestQueue(this).add(jsonRequest);
+    }
+
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         private String resp;
