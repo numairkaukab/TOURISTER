@@ -2,18 +2,16 @@ package com.example.mehmood.splashy;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
+
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,35 +24,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -64,9 +65,10 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -85,8 +87,12 @@ public class MainActivity extends AppCompatActivity
     android.support.v4.app.FragmentManager aMap;
     GoogleMap map;
     DrawerLayout drawer;
-
     private static final int PLACE_PICKER_REQUEST = 1;
+    Place place=null;
+    private int hotel_id;
+    private int hotel_detail;
+    TextView recoText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +103,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        recoText= (TextView) findViewById(R.id.reco);
+        recoText.setMovementMethod(new ScrollingMovementMethod());
 
 
+
+        if (recoText != null) {
+            recoText.setVisibility(View.INVISIBLE);
+        }
         AsyncTaskRunner runner = new AsyncTaskRunner();
         runner.execute();
 
@@ -191,9 +203,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         final ImageView imageView = (ImageView) findViewById(R.id.imageView2);
 
-
         if (imageView != null) {
             imageView.setVisibility(View.INVISIBLE);
+        }
+
+        if (recoText != null) {
+            recoText.setVisibility(View.INVISIBLE);
         }
 
         int id = item.getItemId();
@@ -212,10 +227,13 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_recommendations) {
-            imageView.setVisibility(View.VISIBLE);
 
-            imageView.setImageResource(R.drawable.coming_soon);
+
+        } else if (id == R.id.nav_recommendations) {
+            //imageView.setVisibility(View.VISIBLE);
+            recoText.setVisibility(View.VISIBLE);
+
+            //imageView.setImageResource(R.drawable.coming_soon);
 
         } else if (id == R.id.nav_planning) {
             imageView.setVisibility(View.VISIBLE);
@@ -241,7 +259,7 @@ public class MainActivity extends AppCompatActivity
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode ==  RESULT_OK) {
-                final Place place = PlacePicker.getPlace(data, this);
+                place = PlacePicker.getPlace(data, this);
                 final CharSequence name = place.getName();
                 lt = place.getLatLng();
                 ch = place.getName();
@@ -255,11 +273,13 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
 
         map=googleMap;
+      //  googleMap.clear();
         for(int i=0;i<arrayList.size();i++){
-            googleMap.addMarker(new MarkerOptions()
+            Marker marker=googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(Double.parseDouble(arrayList.get(i).get("lat")), Double.parseDouble(arrayList.get(i).get("lng"))))
                     .title(arrayList.get(i).get("name"))
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
+                    .snippet(arrayList.get(i).get("item_id"))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_tag)));
 
             Log.v("christmas" + "=" + i, arrayList.get(i).get("lat"));
 
@@ -267,7 +287,23 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
+                                               @Override public boolean onMarkerClick(Marker marker) {
+
+                                                   marker.showInfoWindow();
+                                                   Log.e("i am clicked", String.valueOf(marker.getSnippet()));
+                                                   hotel_id= Integer.parseInt(marker.getSnippet());
+                                                   recoText.setText("       -::- RECOMMENDED HOTELS -::- \n\n");
+                                                    recommend_hotel();
+                                                   //use snippet to get itemid and send get request contentfilter
+
+
+                                                   return true;
+                                               }
+
+                                           }
+        );
 
     if(check) {
             //Intent tag = new Intent(MainActivity.this, TagPOI.class);
@@ -276,20 +312,23 @@ public class MainActivity extends AppCompatActivity
             my_pop();
 
 
+
+/*
                 googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(lt.latitude, lt.longitude))
                         .title((String) ch)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_green_round)));
 
-
+*/
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lt, 15));
             googleMap.animateCamera(CameraUpdateFactory.zoomIn());
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
             check=false;
 
-/*
-            googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+
+ /*            googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
                     return null;
@@ -299,7 +338,10 @@ public class MainActivity extends AppCompatActivity
                 public View getInfoContents(Marker marker) {
 
                     View view = getLayoutInflater().inflate(R.layout.info_tag, null);
-                    TextView lat = (TextView) view.findViewById(R.id.textView3);
+                    Log.e("i am clicked",marker.getId());
+                    Log.v("i am clicked","verbose");
+                    Log.i("i am clicked",marker.getId());
+                   TextView lat = (TextView) view.findViewById(R.id.textView3);
                     TextView lng = (TextView) view.findViewById(R.id.textView4);
                     TextView snip = (TextView) view.findViewById(R.id.snippet);
 
@@ -318,7 +360,6 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
     public void my_pop(){
 
 
@@ -332,11 +373,17 @@ public class MainActivity extends AppCompatActivity
         sub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                map.addMarker(new MarkerOptions()
+                        .position(new LatLng(lt.latitude, lt.longitude))
+                        .title((String) ch)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.hotel_tag)));
+                tag_write();
                 pw.dismiss();
             }
         });
     }
-public void tag_write(){
+
+    public void tag_write(){
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://tourister.space/hotelTag",
                 new Response.Listener<String>() {
@@ -386,7 +433,7 @@ public void tag_write(){
         requestQueue.add(stringRequest);
     }
 
-public void recommend_hotel(){
+    public void recommend_hotel(){
 
         JsonArrayRequest jsonRequest = null;
         jsonRequest = new JsonArrayRequest(Request.Method.GET, "http://tourister.space/contentFilter/"+hotel_id,new Response.Listener<JSONArray>() {
@@ -424,7 +471,7 @@ public void recommend_hotel(){
         Volley.newRequestQueue(this).add(jsonRequest);
     }
 
- public void hotels_detail(){
+    public void hotels_detail(){
 
         StringRequest  jsonRequest = null;
         jsonRequest = new StringRequest (Request.Method.GET, "http://tourister.space/hotelDetails/"+hotel_detail,new Response.Listener<String>() {
@@ -448,7 +495,6 @@ public void recommend_hotel(){
 
         Volley.newRequestQueue(this).add(jsonRequest);
     }
-
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
@@ -482,6 +528,8 @@ public void recommend_hotel(){
                     hm.put("lat",lati);
                     hm.put("lng",longi);
                     hm.put("name",nElement.getAttribute("name"));
+                    hm.put("item_id",nElement.getAttribute("item_id"));
+                    hm.put("addr",nElement.getAttribute("addr"));
                     arrayList.add(i,hm);
                     Log.v("name",nElement.getAttribute("name"));
 
@@ -492,6 +540,8 @@ public void recommend_hotel(){
             catch (Exception e) {
                 e.printStackTrace();
             }
+
+
 
             return resp;
         }
@@ -504,7 +554,6 @@ public void recommend_hotel(){
         @Override
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
-
         }
 
         /*
